@@ -1,0 +1,33 @@
+{
+    "name": "flutter-clean-arch-gen",
+    "displayName": "Flutter Clean Architecture Generator",
+    "description": "Generate clean architecture feature template for Flutter",
+    "version": "0.0.1",
+    "engines": {
+        "vscode": "^1.99.0"
+    },
+    "activationEvents": [
+        "onCommand:extension.generateCleanFeature"
+    ],
+    "contributes": {
+        "commands": [
+            {
+                "command": "extension.generateCleanFeature",
+                "title": "Flutter: Generate Clean Feature"
+            }
+        ]
+    },
+    "main": "extension.js",
+    "scripts": {
+        "vscode:prepublish": "npm run compile",
+        "compile": "tsc -p ./",
+        "watch": "tsc -watch -p ./",
+        "pretest": "npm run compile && npm run lint",
+        "lint": "eslint src --ext ts",
+        "test": "node ./out/test/runTest.js"
+    },
+    "devDependencies": {
+        "@types/node": "^22.14.0",
+        "@types/vscode": "^1.99.1"
+    }
+}
