@@ -32,6 +32,15 @@ var __importStar = (this && this.__importStar) || (function () {
         return result;
     };
 })();
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.activate = activate;
 exports.deactivate = deactivate;
@@ -39,8 +48,9 @@ const vscode = __importStar(require("vscode"));
 const path = __importStar(require("path"));
 const fs = __importStar(require("fs"));
 function activate(context) {
-    const disposable = vscode.commands.registerCommand('extension.generateCleanFeature', async () => {
-        const featureName = await vscode.window.showInputBox({
+    const disposable = vscode.commands.registerCommand('extension.generateCleanFeature', (uri) => __awaiter(this, void 0, void 0, function* () {
+        var _a, _b;
+        const featureName = yield vscode.window.showInputBox({
             placeHolder: 'Enter feature name (e.g. auth, home, profile)',
             prompt: 'This will generate a new clean architecture feature folder',
         });
@@ -48,13 +58,13 @@ function activate(context) {
             vscode.window.showWarningMessage('Feature name is required.');
             return;
         }
-        const workspaceFolders = vscode.workspace.workspaceFolders;
-        if (!workspaceFolders) {
-            vscode.window.showErrorMessage('No workspace is open.');
+        // 📌 우클릭한 폴더 경로 기준으로 생성
+        const basePath = (uri === null || uri === void 0 ? void 0 : uri.fsPath) || ((_b = (_a = vscode.workspace.workspaceFolders) === null || _a === void 0 ? void 0 : _a[0]) === null || _b === void 0 ? void 0 : _b.uri.fsPath);
+        if (!basePath) {
+            vscode.window.showErrorMessage('No valid folder selected.');
             return;
         }
-        const basePath = workspaceFolders[0].uri.fsPath;
-        const featurePath = path.join(basePath, 'lib', 'features', featureName);
+        const featurePath = path.join(basePath, featureName);
         const foldersToCreate = [
             'application',
             'data/datasources',
@@ -70,8 +80,8 @@ function activate(context) {
             const fullPath = path.join(featurePath, folder);
             fs.mkdirSync(fullPath, { recursive: true });
         });
-        vscode.window.showInformationMessage(`Clean architecture folders for "${featureName}" created!`);
-    });
+        vscode.window.showInformationMessage(`Clean architecture folders for "${featureName}" created at ${featurePath}`);
+    }));
     context.subscriptions.push(disposable);
 }
 function deactivate() { }
